@@ -18,6 +18,25 @@ float random (float2 st) {
         43758.5453123);
 }
 
+float smoothNoise(float2 st) {
+    float2 i_st = floor(st);
+    float2 f_st = frac(st);
+    // Noise at the four corners of the cell
+    float n00 = random(i_st);                // Bottom-left corner
+    float n10 = random(i_st + float2(1.0, 0.0)); // Bottom-right corner
+    float n01 = random(i_st + float2(0.0, 1.0)); // Top-left corner
+    float n11 = random(i_st + float2(1.0, 1.0)); // Top-right corner
+
+    // Interpolate along x-axis (between left and right sides)
+    float nx0 = lerp(n00, n10, smoothstep(0.0, 1.0, f_st.x));
+    float nx1 = lerp(n01, n11, smoothstep(0.0, 1.0, f_st.x));
+
+    // Interpolate along z-axis (between top and bottom results)
+    float result = lerp(nx0, nx1, smoothstep(0.0, 1.0, f_st.y));
+
+    return result;
+}
+
 [numthreads(1024, 1, 1)] // Define how many threads will run in parallel
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -26,13 +45,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     // Get the vertex at this thread's index
     float3 v = vertices[id.x];
 
-    float2 i = floor(v.xz/10.0);
-    float2 f = frac(v.xz);
-
     // Perform displacement using a sine wave (you can replace this with any function)
     // float2 st = i+_TimeMultiplier*_Time*0.001 ;
-    float2 st = i;
-    float noise = random(st); 
+    float2 st = v.xz;
+    st = st+_TimeMultiplier*_Time;
+
+    float noise = smoothNoise(st); 
     v.y = noise*_HeightMultiplier;
     // vertex.z += cos(vertex.y * 5.0 + _Time) * 0.005;
 
