@@ -26,8 +26,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     // Get the vertex at this thread's index
     float3 v = vertices[id.x];
 
+    float2 i = floor(v.xz/10.0);
+    float2 f = frac(v.xz);
+
     // Perform displacement using a sine wave (you can replace this with any function)
-    float2 st = v.xz+_TimeMultiplier*_Time*0.001 ;
+    // float2 st = i+_TimeMultiplier*_Time*0.001 ;
+    float2 st = i;
     float noise = random(st); 
     v.y = noise*_HeightMultiplier;
     // vertex.z += cos(vertex.y * 5.0 + _Time) * 0.005;
