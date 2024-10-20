@@ -18,7 +18,7 @@ float random (float2 st) {
         43758.5453123);
 }
 
-float smoothNoise(float2 st) {
+float smoothValueNoise(float2 st) {
     float2 i_st = floor(st);
     float2 f_st = frac(st);
     // Noise at the four corners of the cell
@@ -37,6 +37,60 @@ float smoothNoise(float2 st) {
     return result;
 }
 
+
+// returns random float2 vector in the -1 1 range
+float2 random2(float2 st){
+
+    st = float2( dot(st, float2(127.1, 311.7)),
+               dot(st, float2(269.5, 183.3)) );
+
+    return -1.0 + 2.0 * frac(sin(st) * 43758.5453123);
+}
+
+float gradientNoise(float2 st)
+{
+    float2 i_st = floor(st);
+    float2 f_st = frac(st);
+
+    // four corners of the cell
+    float2 c00 = float2(0.0, 0.0);
+    float2 c10 = float2(1.0, 0.0);
+    float2 c01 = float2(0.0, 1.0);
+    float2 c11 = float2(1.0, 1.0);
+
+    //gradient Noise vectors at the four corners of the cell
+    float2 n00 = random2(i_st + c00);                // Bottom-left corner
+    float2 n10 = random2(i_st + c10); // Bottom-right corner
+    float2 n01 = random2(i_st + c01); // Top-left corner
+    float2 n11 = random2(i_st + c11); // Top-right corner
+
+    // Displacement vectors from current point to the corners
+    float2 d00 = f_st - c00;
+    float2 d10 = f_st - c10;
+    float2 d01 = f_st - c01;
+    float2 d11 = f_st - c11;
+
+    // influence of the displacement vectors to the current point
+
+    float dot00 = dot(d00,n00);
+    float dot10 = dot(d10,n10);
+    float dot01 = dot(d01,n01);
+    float dot11 = dot(d11,n11);
+
+    // interpolate along the x axis bottom and top
+
+    float nx0 = lerp(dot00,dot01,smoothstep(0.,1.,f_st.x));
+    float nx1 = lerp(dot10,dot11,smoothstep(0.,1.,f_st.y));
+
+    // interpolate along the y axis
+
+    float noiseValue = lerp(nx0,nx1,smoothstep(0.,1.,f_st.y));
+
+    return noiseValue;
+
+
+}
+
 [numthreads(1024, 1, 1)] // Define how many threads will run in parallel
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -50,7 +104,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float2 st = v.xz/10.0;
     st = st+_TimeMultiplier*_Time;
 
-    float noise = smoothNoise(st); 
+    float noise = gradientNoise(st); 
     v.y = noise*_HeightMultiplier;
     // vertex.z += cos(vertex.y * 5.0 + _Time) * 0.005;
 
