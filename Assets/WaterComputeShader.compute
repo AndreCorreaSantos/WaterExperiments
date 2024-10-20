@@ -47,7 +47,7 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     // Perform displacement using a sine wave (you can replace this with any function)
     // float2 st = i+_TimeMultiplier*_Time*0.001 ;
-    float2 st = v.xz;
+    float2 st = v.xz/10.0;
     st = st+_TimeMultiplier*_Time;
 
     float noise = smoothNoise(st); 
