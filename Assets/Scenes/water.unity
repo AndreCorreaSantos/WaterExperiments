@@ -458,9 +458,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc25e999dac47a94cacf4af296bbcf96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 100
-  height: 100
-  quadSize: 1
+  width: 200
+  height: 200
+  quadSize: 0.5
 --- !u!4 &2129651172
 Transform:
   m_ObjectHideFlags: 0
@@ -539,6 +539,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 7200000, guid: 1816663a2923d424ea3dfca73fd4c924, type: 3}
+  timeMultiplier: 1
+  heightMultiplier: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

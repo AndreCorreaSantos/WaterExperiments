@@ -3,7 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class planeGenerator : MonoBehaviour
 {
+    [Range(10, 1000)]
     public int width = 10;      // Number of quads along the width
+     [Range(10, 1000)]
     public int height = 10;     // Number of quads along the height
     public float quadSize = 1f; // Size of each quad
 

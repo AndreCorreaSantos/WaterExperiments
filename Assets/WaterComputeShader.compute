@@ -6,13 +6,17 @@ RWStructuredBuffer<float3> vertices;
 // Time parameter for dynamic displacement
 float _Time;
 
+float _TimeMultiplier;
+float _HeightMultiplier;
+
 // Number of vertices (plane subdivisions)
 int _VertexCount;
 
-
-// float noise(x,z){
-
-// }
+float random (float2 st) {
+    return frac(sin(dot(st.xy,
+                         float2(12.9898,78.233)))*
+        43758.5453123);
+}
 
 [numthreads(1024, 1, 1)] // Define how many threads will run in parallel
 void CSMain (uint3 id : SV_DispatchThreadID)
@@ -23,8 +27,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     float3 v = vertices[id.x];
 
     // Perform displacement using a sine wave (you can replace this with any function)
-    float pointValue = v.x + v.z; 
-    v.y += sin(pointValue * 5.0 + _Time)*0.005 ;
+    float2 st = v.xz+_TimeMultiplier*_Time*0.001 ;
+    float noise = random(st); 
+    v.y = noise*_HeightMultiplier;
     // vertex.z += cos(vertex.y * 5.0 + _Time) * 0.005;
 
     // Write the modified vertex back

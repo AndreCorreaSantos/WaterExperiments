@@ -12,7 +12,14 @@ public class WaterCompute : MonoBehaviour
     private ComputeBuffer vertexBuffer;
     private int kernelHandle;
     private int vertexCount;
+    private Material material;
     private Vector3[] vertices;
+
+    [Range(-10.0f, 10.0f)]
+    public float timeMultiplier = 1.0f;
+
+    [Range(0.001f, 10.0f)]
+    public float heightMultiplier = 1.0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +40,8 @@ public class WaterCompute : MonoBehaviour
     {
         // setting shader variables
         shader.SetFloat("_Time", Time.time);
+        shader.SetFloat("_TimeMultiplier",timeMultiplier);
+        shader.SetFloat("_HeightMultiplier",heightMultiplier);
         shader.SetInt("_VertexCount", vertexCount);
         int threadGroups = Mathf.CeilToInt(vertexCount / 1024f); // 1024,1,1 threads per threadgroup
         shader.SetBuffer(kernelHandle,"vertices", vertexBuffer);
