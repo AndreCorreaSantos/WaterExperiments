@@ -8,7 +8,7 @@ float _Time;
 
 float _TimeMultiplier;
 float _HeightMultiplier;
-
+int _CellScale;
 // Number of vertices (plane subdivisions)
 int _VertexCount;
 
@@ -79,8 +79,8 @@ float gradientNoise(float2 st)
 
     // interpolate along the x axis bottom and top
 
-    float nx0 = lerp(dot00,dot01,smoothstep(0.,1.,f_st.x));
-    float nx1 = lerp(dot10,dot11,smoothstep(0.,1.,f_st.y));
+    float nx0 = lerp(dot00,dot10,smoothstep(0.,1.,f_st.x));
+    float nx1 = lerp(dot01,dot11,smoothstep(0.,1.,f_st.y));
 
     // interpolate along the y axis
 
@@ -101,7 +101,9 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
     // Perform displacement using a sine wave (you can replace this with any function)
     // float2 st = i+_TimeMultiplier*_Time*0.001 ;
-    float2 st = v.xz/10.0;
+
+
+    float2 st = v.xz/_CellScale;
     st = st+_TimeMultiplier*_Time;
 
     float noise = gradientNoise(st); 

@@ -15,6 +15,9 @@ public class WaterCompute : MonoBehaviour
     private Material material;
     private Vector3[] vertices;
 
+    [Range(1, 100)]
+    public int gridScale = 10;
+
     [Range(-10.0f, 10.0f)]
     public float timeMultiplier = 1.0f;
 
@@ -43,6 +46,7 @@ public class WaterCompute : MonoBehaviour
         shader.SetFloat("_TimeMultiplier",timeMultiplier);
         shader.SetFloat("_HeightMultiplier",heightMultiplier);
         shader.SetInt("_VertexCount", vertexCount);
+        shader.SetInt("_CellScale",gridScale);
         int threadGroups = Mathf.CeilToInt(vertexCount / 1024f); // 1024,1,1 threads per threadgroup
         shader.SetBuffer(kernelHandle,"vertices", vertexBuffer);
         // dispatch the shader

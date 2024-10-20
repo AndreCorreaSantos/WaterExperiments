@@ -31,3 +31,12 @@ c7dc0cfbea7ff76872b8c58b35b15132278b61e1
 - Use value noise as the gradient for the actual noise in the scene.
 - Value noise - used for height or normal maps, the noise value is more hectic.
 - Gradient Noise - used for terrain generation
+
+
+### First attempt at implementing gradient noise from scratch, got very interesting blocky result
+
+b2aaa28ae34d56e70bcc1cecac9302e4e02ed955
+
+- very bad performance as well, computer is suffering.
+
+![1729455175109](image/notes/1729455175109.png)
