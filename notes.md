@@ -33,7 +33,7 @@ c7dc0cfbea7ff76872b8c58b35b15132278b61e1
 - Gradient Noise - used for terrain generation
 
 
-### First attempt at implementing gradient noise from scratch, got very interesting blocky result
+### First attempt at implementing gradient noise from scratch, got very interesting blocky result --> because of absence of a fade function.
 
 b2aaa28ae34d56e70bcc1cecac9302e4e02ed955
 
