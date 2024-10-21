@@ -52,7 +52,7 @@ float gradientNoise(float2 st)
     float2 i_st = floor(st);
     float2 f_st = frac(st);
 
-    // Apply Perlin's fade function
+    // hermite cubic 
     float2 u = f_st * f_st * (3.0 - 2.0 * f_st);
 
     // Four corners of the cell
@@ -65,7 +65,7 @@ float gradientNoise(float2 st)
     float2 n00 = random2(i_st + c00);  
     float2 n10 = random2(i_st + c10); 
     float2 n01 = random2(i_st + c01);  
-    float2 n11 = random2(i_st + c11);  
+    float2 n11 = random2(i_st + c11);  // Top-right corner
 
     // Displacement vectors from the current point to the corners
     float2 d00 = f_st - c00;
@@ -89,6 +89,80 @@ float gradientNoise(float2 st)
     return noiseValue;
 }
 
+float3 random3( float3 st )
+{
+	st = float3( dot(st,float3(127.1,311.7, 74.7)),
+			  dot(st,float3(269.5,183.3,246.1)),
+			  dot(st,float3(113.5,271.9,124.6)));
+
+	return -1.0 + 2.0*frac(sin(st)*43758.5453123);
+}
+
+float gradientNoise3(float3 st)
+{
+    // Floor and fractional parts of the input coordinates
+    float3 i_st = floor(st);
+    float3 f_st = frac(st);
+
+    // Hermite cubic smoothing function
+    float3 u = f_st * f_st * (3.0 - 2.0 * f_st);
+
+    // Eight corners of the 3D cell
+    float3 c000 = float3(0.0, 0.0, 0.0);
+    float3 c100 = float3(1.0, 0.0, 0.0);
+    float3 c010 = float3(0.0, 1.0, 0.0);
+    float3 c110 = float3(1.0, 1.0, 0.0);
+    float3 c001 = float3(0.0, 0.0, 1.0);
+    float3 c101 = float3(1.0, 0.0, 1.0);
+    float3 c011 = float3(0.0, 1.0, 1.0);
+    float3 c111 = float3(1.0, 1.0, 1.0);
+
+    // Gradient vectors at the eight corners of the cell
+    float3 n000 = random3(i_st + c000);
+    float3 n100 = random3(i_st + c100);
+    float3 n010 = random3(i_st + c010);
+    float3 n110 = random3(i_st + c110);
+    float3 n001 = random3(i_st + c001);
+    float3 n101 = random3(i_st + c101);
+    float3 n011 = random3(i_st + c011);
+    float3 n111 = random3(i_st + c111);
+
+    // Displacement vectors from the current point to the corners
+    float3 d000 = f_st - c000;
+    float3 d100 = f_st - c100;
+    float3 d010 = f_st - c010;
+    float3 d110 = f_st - c110;
+    float3 d001 = f_st - c001;
+    float3 d101 = f_st - c101;
+    float3 d011 = f_st - c011;
+    float3 d111 = f_st - c111;
+
+    // Dot products: influence of the displacement vectors
+    float dot000 = dot(d000, n000);
+    float dot100 = dot(d100, n100);
+    float dot010 = dot(d010, n010);
+    float dot110 = dot(d110, n110);
+    float dot001 = dot(d001, n001);
+    float dot101 = dot(d101, n101);
+    float dot011 = dot(d011, n011);
+    float dot111 = dot(d111, n111);
+
+    // Interpolate along the x-axis
+    float nx00 = lerp(dot000, dot100, u.x);
+    float nx10 = lerp(dot010, dot110, u.x);
+    float nx01 = lerp(dot001, dot101, u.x);
+    float nx11 = lerp(dot011, dot111, u.x);
+
+    // Interpolate along the y-axis
+    float nxy0 = lerp(nx00, nx10, u.y);
+    float nxy1 = lerp(nx01, nx11, u.y);
+
+    // Interpolate along the z-axis for the final noise value
+    float noiseValue = lerp(nxy0, nxy1, u.z);
+
+    return noiseValue;
+}
+
 [numthreads(1024, 1, 1)] // Define how many threads will run in parallel
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
@@ -99,10 +173,12 @@ void CSMain (uint3 id : SV_DispatchThreadID)
 
 
 
-    float2 st = v.xz/_CellScale;
-    st = st+_TimeMultiplier*_Time;
+    float3 st = float3(v.x,_TimeMultiplier*_Time,v.z)/_CellScale;
 
-    float noise = gradientNoise(st); 
+    float noise = gradientNoise3(st);
+     
+
+
     v.y = noise*_HeightMultiplier;
 
 

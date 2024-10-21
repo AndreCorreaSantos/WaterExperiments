@@ -18,7 +18,7 @@ public class WaterCompute : MonoBehaviour
     [Range(1, 100)]
     public int gridScale = 10;
 
-    [Range(-10.0f, 10.0f)]
+    [Range(0.0f, 20.0f)]
     public float timeMultiplier = 1.0f;
 
     [Range(0.001f, 10.0f)]
